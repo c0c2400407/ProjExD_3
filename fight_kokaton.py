@@ -96,7 +96,7 @@ class Beam:
         self.img = pg.image.load(f"fig/beam.png") #こうかとんsurface
         self.rct = self.img.get_rect()# こうかとんrect
         self.rct.centery = bird.rct.centery #こうかとん中心縦座標
-        self.ビームの左座標 = bird.rct.right #こうかとんの右座標
+        self.rct.left = bird.rct.right #こうかとんの右座標
         self.vx, self.vy = +5, 0
 
     def update(self, screen: pg.Surface):
@@ -162,6 +162,9 @@ def main():
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
+                fonto = pg.font.Font(None, 80)
+                txt = fonto.render("Game Over", True, (255, 0, 0))
+                screen.blit(txt, [WIDTH//2-150, HEIGHT//2])
                 pg.display.update()
                 time.sleep(1)
                 return
