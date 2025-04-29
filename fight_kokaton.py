@@ -208,7 +208,7 @@ def main():
         for j, bomb in enumerate(bombs):
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):#ビームと爆弾の衝突判定
-                    beam[i] = None
+                    beam = None
                     bombs[j] = None
                     bird.change_img(6, screen)#喜び
                     score.increase_score()
@@ -225,7 +225,6 @@ def main():
         pg.display.update()
         tmr += 1
         clock.tick(50)
-
 
 if __name__ == "__main__":
     pg.init()
