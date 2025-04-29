@@ -15,7 +15,7 @@ def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
     オブジェクトが画面内or画面外を判定し,真理値タプルを返す関数
     引数：こうかとんや爆弾,ビームなどのRect
-    戻り値：横方向,縦方向のはみ出し判定結果（画面内：True／画面外：False）
+    戻り値：横方向,縦方向のはみ出し判定結果（画面内：True/画面外：False）
     """
     yoko, tate = True, True
     if obj_rct.left < 0 or WIDTH < obj_rct.right:
@@ -110,6 +110,7 @@ class Beam:
             screen.blit(self.img, self.rct)    
 
 
+
 class Bomb:
     """
     爆弾に関するクラス
@@ -140,6 +141,29 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    def __init__(self):
+        self.fonto = pg.font.SysFont("hgp創英角ポップ体", 30)  # フォントの設定
+        self.color = (0, 0, 255)  # 文字色の設定（青）
+        self.score = 0  # スコアの初期値
+        self.update_image()  # 文字列Surfaceの生成
+
+    def update_image(self):
+        """スコアの表示用文字列Surfaceを生成する"""
+        self.img = self.fonto.render(f"Score: {self.score}", True, self.color)
+        self.rct = self.img.get_rect()
+        self.rct.left = 100  # 横座標
+        self.rct.top = HEIGHT - 50  # 縦座標（画面下部から50）
+
+    def increase_score(self):
+        """スコアを増加させる"""
+        self.score += 1
+        self.update_image()  # スコア画像を更新
+
+    def update(self, screen: pg.Surface):
+        """スコアを画面に表示する"""
+        screen.blit(self.img, self.rct)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -152,6 +176,8 @@ def main():
     for i in range(NUM_OF_BOMBS):
         bombs.append(Bomb((255, 0, 0), 10))
     #bombs = [Bomb((255, 0, 0), 10) for ]
+    #score = 0
+    score = Score()
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -182,6 +208,7 @@ def main():
                     beam = None
                     bombs[j] = None
                     bird.change_img(6, screen)#喜び
+                    score.increase_score()
             bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
@@ -190,6 +217,7 @@ def main():
             beam.update(screen)  
         for bomb in bombs:
             bomb.update(screen)
+        score.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
