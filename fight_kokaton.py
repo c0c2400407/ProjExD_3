@@ -108,7 +108,9 @@ class Beam:
         if check_bound(self.rct) == (True, True):
             self.rct.move_ip(self.vx, self.vy)
             screen.blit(self.img, self.rct)    
-
+        else:
+            return False
+        return True
 
 
 class Bomb:
@@ -179,6 +181,7 @@ def main():
     #score = 0
     score = Score()
     clock = pg.time.Clock()
+    beams = []
     tmr = 0
     while True:
         for event in pg.event.get():
@@ -186,7 +189,7 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                     # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beam = Beam(bird)
         screen.blit(bg_img, [0, 0])
         
         #if bomb is not None:
@@ -205,10 +208,11 @@ def main():
         for j, bomb in enumerate(bombs):
             if beam is not None:
                 if beam.rct.colliderect(bomb.rct):#ビームと爆弾の衝突判定
-                    beam = None
+                    beam[i] = None
                     bombs[j] = None
                     bird.change_img(6, screen)#喜び
                     score.increase_score()
+                    beams = [beam for beam in beams if beam is not None]
             bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
