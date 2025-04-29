@@ -7,14 +7,15 @@ import pygame as pg
 
 WIDTH = 1100  # ゲームウィンドウの幅
 HEIGHT = 650  # ゲームウィンドウの高さ
+NUM_OF_BOMBS = 5 #爆弾の数
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 def check_bound(obj_rct: pg.Rect) -> tuple[bool, bool]:
     """
-    オブジェクトが画面内or画面外を判定し，真理値タプルを返す関数
-    引数：こうかとんや爆弾，ビームなどのRect
-    戻り値：横方向，縦方向のはみ出し判定結果（画面内：True／画面外：False）
+    オブジェクトが画面内or画面外を判定し,真理値タプルを返す関数
+    引数：こうかとんや爆弾,ビームなどのRect
+    戻り値：横方向,縦方向のはみ出し判定結果（画面内：True／画面外：False）
     """
     yoko, tate = True, True
     if obj_rct.left < 0 or WIDTH < obj_rct.right:
@@ -147,6 +148,10 @@ def main():
     bird = Bird((300, 200))
     beam = None
     bomb = Bomb((255, 0, 0), 10)
+    bombs = []
+    for i in range(NUM_OF_BOMBS):
+        bombs.append(Bomb((255, 0, 0), 10))
+    #bombs = [Bomb((255, 0, 0), 10) for ]
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -158,7 +163,8 @@ def main():
                 beam = Beam(bird)            
         screen.blit(bg_img, [0, 0])
         
-        if bomb is not None:
+        #if bomb is not None:
+        for bomb in bombs:
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
@@ -169,18 +175,20 @@ def main():
                 time.sleep(1)
                 return
             
-        if beam is not None:
-            if bomb is not None:
+        #if bomb is not None:
+        for j, bomb in enumerate(bombs):
+            if beam is not None:
                 if beam.rct.colliderect(bomb.rct):#ビームと爆弾の衝突判定
                     beam = None
-                    bomb = None
+                    bombs[j] = None
                     bird.change_img(6, screen)#喜び
+            bombs = [bomb for bomb in bombs if bomb is not None]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         if beam is not None:
             beam.update(screen)  
-        if bomb is not None:
+        for bomb in bombs:
             bomb.update(screen)
         pg.display.update()
         tmr += 1
